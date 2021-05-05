@@ -26,7 +26,7 @@ const checkForAvailableVaccineCenterByPincode = async (pinCode) => {
   const availableCenters = [];
   response.centers.forEach((center) => {
     center.sessions.forEach((session) => {
-      if(session.available_capacity && session.min_age_limit === minAge) {
+      if(session.available_capacity > 1 && session.min_age_limit === minAge) {
         availableCenters.push({
           date: session.date,
           name: center.name,

@@ -17,7 +17,7 @@ const checkVaccineAvailablity = () => {
         sentDiscordNotification({error: error.message});
       }
     },
-    runOnInit: false,
+    runOnInit: true,
     start: false,
     utcOffset: 0,
   }).start();
