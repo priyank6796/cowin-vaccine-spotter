@@ -1,20 +1,26 @@
-const { checkForAvailableVaccineCenterByPincode } = require('./helper');
+const { checkForAvailableVaccineCenterByPincode, checkForAvailableVaccineCenterByPincodePrivate } = require('./helper');
 const { sentDiscordNotification } = require('./discord-helper');
 const { PinCodes } = require('./config');
 const { CronJob } = require('cron');
 
+const timeout =(ms) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
+
 const checkVaccineAvailablity = () => {
   return new CronJob({
-    cronTime: '0 */5 * * * *',
+    cronTime: '0 */2 * * * *',
     onTick: async () => {
       try {
         console.info(`${new Date()} Cron job Run`);
         for(let i=0; i< PinCodes.length; i++) {
-          const response = await checkForAvailableVaccineCenterByPincode(PinCodes[i]);
+          const response = await checkForAvailableVaccineCenterByPincodePrivate(PinCodes[i]);
           if(response.length > 0) await sentDiscordNotification(response);
+          await timeout(200);
         }
       } catch (error) {
-        sentDiscordNotification({error: error.message});
+        console.log(error);
+        // sentDiscordNotification({error: error.message});
       }
     },
     runOnInit: true,
