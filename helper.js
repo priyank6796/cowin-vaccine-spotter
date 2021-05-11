@@ -57,7 +57,7 @@ const checkForAvailableVaccineCenterByPincodePrivate = async (pinCode) => {
   const url = vaccinePrivateBaseURL;
   const query = {
     pincode: pinCode,
-    date: '10-05-2021',
+    date: getCurrentDate(),
   };
   const headers = {
     authorization
