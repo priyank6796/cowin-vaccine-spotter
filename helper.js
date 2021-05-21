@@ -21,6 +21,16 @@ const restCall = async (uri, queryParams, headers = {}) => {
   return await rp(options);
 };
 
+const restCall1 = async (uri, queryParams, headers = {}) => {
+  const options = {
+    'method': 'GET',
+    'url': `${uri}?district_id=${queryParams.district_id}&date=${queryParams.date}`,
+    headers,
+    json: true
+  };
+  return await rp(options);
+};
+
 const getCurrentDate = () => {
   const nowDate = new Date();
   // return nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
@@ -57,7 +67,8 @@ const checkForAvailableVaccineCenterByPincodePrivate = async (pinCode) => {
   const url = vaccinePrivateBaseURL;
   const query = {
     pincode: pinCode,
-    date: getCurrentDate(),
+    // date: getCurrentDate(),
+    date: '19-05-2021',
   };
   const headers = {
     authorization
@@ -86,5 +97,42 @@ const checkForAvailableVaccineCenterByPincodePrivate = async (pinCode) => {
   return availableCenters;
 };
 
+const checkForAvailableVaccineCenterByDistrictPrivate = async (district_id) => {
+  const availableCenters = [];
+
+  const url = 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict';
+  const query = {
+    district_id,
+    // date: getCurrentDate(),
+    date: '21-05-2021',
+  };
+  const headers = {
+    authorization
+  };
+
+  try {
+    const response = await restCall1(url, query, headers);
+
+    response.centers.forEach((center) => {
+      center.sessions.forEach((session) => {
+        if (session.available_capacity > 50 && session.min_age_limit === minAge) {
+          availableCenters.push({
+            date: session.date,
+            name: center.name,
+            pincode: center.pincode,
+            available_capacity: session.available_capacity,
+          })
+        }
+      });
+    });
+    console.log(JSON.stringify(availableCenters));
+  }
+  catch (er) {
+    console.log(er.message);
+  }
+  return availableCenters;
+};
+
 module.exports.checkForAvailableVaccineCenterByPincode = checkForAvailableVaccineCenterByPincode;
 module.exports.checkForAvailableVaccineCenterByPincodePrivate = checkForAvailableVaccineCenterByPincodePrivate;
+module.exports.checkForAvailableVaccineCenterByDistrictPrivate = checkForAvailableVaccineCenterByDistrictPrivate;
