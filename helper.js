@@ -34,7 +34,7 @@ const restCall1 = async (uri, queryParams, headers = {}) => {
 const getCurrentDate = () => {
   const nowDate = new Date();
   // return nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
-  return `${nowDate.getDate()}-${nowDate.getMonth() + 1}-${nowDate.getFullYear()}`;
+  return `${nowDate.getDate()}-0${nowDate.getMonth() + 1}-${nowDate.getFullYear()}`;
 };
 
 const checkForAvailableVaccineCenterByPincode = async (pinCode) => {
@@ -103,8 +103,7 @@ const checkForAvailableVaccineCenterByDistrictPrivate = async (district_id) => {
   const url = 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict';
   const query = {
     district_id,
-    // date: getCurrentDate(),
-    date: '21-05-2021',
+    date: getCurrentDate(),
   };
   const headers = {
     authorization
@@ -115,12 +114,17 @@ const checkForAvailableVaccineCenterByDistrictPrivate = async (district_id) => {
 
     response.centers.forEach((center) => {
       center.sessions.forEach((session) => {
-        if (session.available_capacity > 50 && session.min_age_limit === minAge) {
+        if (session.available_capacity > 49 && session.min_age_limit === minAge) {
           availableCenters.push({
             date: session.date,
             name: center.name,
             pincode: center.pincode,
             available_capacity: session.available_capacity,
+            available_capacity1: session.available_capacity_dose1,
+            available_capacity2: session.available_capacity_dose2,
+            vaccine_type: session.vaccine,
+            address: center.address,
+            district_name: center.district_name,
           })
         }
       });
